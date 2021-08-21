@@ -6,7 +6,7 @@
 
 <br/>
 
-## <span style=color:#0c6e99>1.1. 지역 변수의 생명 주기</span>
+## <span style=color:#0c6e99>1.1 지역 변수의 생명 주기</span>
 
 <span style=background-color:#ddebf1>**전역 변수의 선언**</span>은 런타임에 실행되는 것이 아니라 <span style=color:#0c6e99>**런타임 이전 단계에서**</span> 자바스크립트 엔진에 의해 먼저 실행된다. 
 
@@ -27,7 +27,7 @@
 
 <br/>
 
-## <span style=color:#0c6e99>1.2. 전역 변수의 생명 주기</span>
+## <span style=color:#0c6e99>1.2 전역 변수의 생명 주기</span>
 
 전역 코드는 함수 호출과 같이 전역 코드를 실행하는 특별한 진입점이 없고 코드가 로드되자마자 곧바로 해석되고 실행된다.
 
