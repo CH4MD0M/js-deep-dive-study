@@ -137,7 +137,7 @@ function Person(age) {
 
 <br/>
 
-_📌 일반 객체는 호출할 수 없지만 함수는 호출할 수 있다._
+📌 _일반 객체는 호출할 수 없지만 함수는 호출할 수 있다._
 
 -   함수 객체는 함수로서 동작하기 위해 함수 객체만을 위한 [[Environment]], [[FormalParameters]] 등의 내부 슬롯과 [[Call]], [[Construct]] 같은 내부 메서드를 추가로 가지고 있다.
 -   함수가 **일반 함수로서 호출되면** **[[Call]]** 이 호출되고 new 연산자와 함께 **생성자 함수로서 호출되면 [[Construct]]** 가 호출된다.
@@ -148,10 +148,10 @@ _📌 일반 객체는 호출할 수 없지만 함수는 호출할 수 있다._
 내부 메서드 [[Construct]]를 갖는 함수 객체를 **constructor**,<br/>
 내부 메서드 [[Construct]]를 갖지 않는 함수 객체를 **non-constructor**라고 부른다.
 
-_📌 **callable**은 호출할 수 있는 객체(함수)를 말하며, **constructor**는 생성자 함수로서 호출할 수 있는 함수,<br/>
+📌 _**callable**은 호출할 수 있는 객체(함수)를 말하며, **constructor**는 생성자 함수로서 호출할 수 있는 함수,<br/>
 **non-constructor**는 생성자 함수로서 호출할 수 없는 함수를 의미한다._
 
-_📌 함수객체는 **constructor**일 수도 있고 **non-constructor**일 수도 있다._
+📌 _함수객체는 **constructor**일 수도 있고 **non-constructor**일 수도 있다._
 
 <br/>
 
@@ -162,7 +162,7 @@ _📌 함수객체는 **constructor**일 수도 있고 **non-constructor**일 �
 -   **constructor:** 함수 선언문, 함수 표현식, 클래스
 -   **non-constructor:** 메서드(ES6 메서드 축약 표현), 화살표 함수
 
-_📌 함수가 어디에 할당되어 있는 지에 따라 메서드인지를 판단하는 것이 아니라 **함수 정의 방식에 따라 constructor**와 **non-constructor**를 구분한다._
+📌 _함수가 어디에 할당되어 있는 지에 따라 메서드인지를 판단하는 것이 아니라 **함수 정의 방식에 따라 constructor**와 **non-constructor**를 구분한다._
 
 ```jsx
 // ////////////////////////////////////////////////////////
@@ -213,7 +213,7 @@ new obj.x(); // TypeError: obj.x is not a constructor
 
 함수 내부에서 **new.target**을 사용하면 **new 연산자**와 함께 생성자 함수로서 호출되었는지 확인할 수 있다.
 
-_📌 new 연산자와 함께 **생성자 함수로서 호출되면** 함수 내부의 new.target은 **함수 자신**을 가리킨다.<br/>
+📌 _new 연산자와 함께 **생성자 함수로서 호출되면** 함수 내부의 new.target은 **함수 자신**을 가리킨다.<br/>
 new 연산자 없이 **함수로서 호출된** 함수 내부의 new.target은 **undefined**다._
 
 ```jsx
