@@ -204,11 +204,10 @@ prototype 프로퍼티는 아무런 의미가 없다.
 
 📌 _모든 객체가 가지고 있는 \_\_proto\_\_ 접근자 프로퍼티와 함수 객체만이 가지고 있는 prototype 프로퍼티는 동일한 프로토타입을 가리킨다._
 
-| <center>구분</center>         |    소유     |        값         |  사용 주체  | <center>사용 목적</center>                                                       |
+| 구분                          |    소유     |        값         |  사용 주체  | 사용 목적                                                                        |
 | :---------------------------- | :---------: | :---------------: | :---------: | :------------------------------------------------------------------------------- |
 | **proto** <br>접근자 프로퍼티 |  모든 객체  | 프로토타입의 참조 |  모든 객체  | 객체가 자신의 프로토타입에 접근 또는 교체하기 <br>위해 사용                      |
 | prototype <br>프로퍼티        | constructor | 프로토타입의 참조 | 생성자 함수 | 생성자 함수가 자신이 생성할 객체(인스턴스)의 <br>프로토타입을 할당하기 위해 사용 |
-|                               |             |                   |             |                                                                                  |
 
 ```jsx
 function Person(name) {
@@ -296,12 +295,12 @@ console.log(obj.constructor === Object); // true
 
 <br/>
 
-| <center>리터럴 표기법</center> | <center>생성자 함수</center> | <center>프로토타입</center> |
-| :----------------------------- | :--------------------------- | :-------------------------- |
-| 객체 리터럴                    | Object                       | Object.prototype            |
-| 함수 리터럴                    | Function                     | Function.prototype          |
-| 배열 리터럴                    | Array                        | Array.prototype             |
-| 정규 표현식 리터럴             | RegExp                       | RegExp.prototype            |
+| 리터럴 표기법      | 생성자 함수 | 프로토타입         |
+| :----------------- | :---------- | :----------------- |
+| 객체 리터럴        | Object      | Object.prototype   |
+| 함수 리터럴        | Function    | Function.prototype |
+| 배열 리터럴        | Array       | Array.prototype    |
+| 정규 표현식 리터럴 | RegExp      | RegExp.prototype   |
 
 <br/><br/>
 
@@ -335,3 +334,123 @@ console.log(obj.constructor === Object); // true
 -   객체가 생성되기 이전에 생성자 함수와 프로토타입은 이미 객체화되어 존재한다.
 -   이후 생성자 함수 또는 리터럴 표기법으로 객체를 생성하면 프로토타입은 생성된 객체의 [[Prototype]] 내부 슬롯에 할당된다.
 -   이로써 생성된 객체는 프로토타입을 상속받는다.
+
+<br/><br/>
+
+# 6. 객체 생성 방식과 프로토타입의 결정
+
+객체 생성 방법(객체 리터럴, object 생성자 함수, 생성자 함수 등)마다 세부적인 객체 생성 방식의 차이는 있지만
+**추상연산자 OrdinaryObjectCreate**에 의해 생성된다는 공통점이 있다.
+
+📌 _프로토타입은 **추상연산자 OrdinaryObjectCreate** 에 전달되는 인수에 의해 결정된다. 이 인수는 객체가 생성되는 시점에 객체 생성 방식에 의해 결정된다._
+
+<br/>
+
+## 6.1 객체 리터럴에 의해 생성된 객체의 프로토타입
+
+자바스크립트 엔진은 객체 리터럴을 평가하여 객체를 생성할 때 추상 연산 OrdinaryObjectCreate를 호출한다.<br/>
+이때 추상 연산 OrdinaryObjectCreate에 전달되는 프로토타입은 **Object.prototype**이다.<br/>
+
+📌 _**객체 리터럴**에 의해 생성되는 객체의 **프로토 타입**은 **Object.prototype**이다._
+
+<br/>
+
+```jsx
+const obj = { x: 1 };
+```
+
+<p align=center>
+<img width="70%" src="https://user-images.githubusercontent.com/54847910/131679610-90fc2bd4-9480-4e43-9b09-9c5655baab6f.png"></p>
+
+## 6.2 Object 생성자 함수에 의해 생성된 객체의 프로토타입
+
+Object 생성자 함수를 인수 없이 호출하면 빈 객체가 생성된다.<br/>
+Object 생성자 함수를 호출하면 OrdinaryObjectCreate가 호출된다.<br/>
+이때 추상 연산 OrdinaryObjectCreate에 전달되는 프로토타입은 **Object.prototype**이다.<br/>
+
+📌 _**Object 생성자 함수**에 의해 생성되는 객체의 **프로토타입**은 **Object.prototype**이다._
+
+<br/>
+
+```jsx
+const obj = new Object();
+obj.x = 1;
+```
+
+<p align=center>
+<img width="70%" src="https://user-images.githubusercontent.com/54847910/131679376-906d6106-db60-4478-be95-776d2934688e.png" ></p>
+
+➡️ **객체리터럴**과 **Object 생성자 함수**에 의한 객체 생성 방식의 차이는 프로퍼티를 추가하는 방식에 있다.
+
+-   **객체 리터럴 방식**은 객체 리터럴 내부에 프로퍼티를 추가하지만,
+-   **Object 생성자 함수 방식**은 일단 빈 객체를 생성한 이후 프로퍼티를 추가해야 한다.
+
+## 6.3 생성자 함수에 의해 생성된 객체의 프로토타입
+
+new 연산자와 함께 생성자 함수를 호출하여 인스턴스를 생성하면 OrdinaryObjectCreate가 호출된다.<br/>
+이때 추상 연산 OrdinaryObjectCreate에 전달되는 프로토타입은 **생성자 함수의 prototype 프로퍼티에 바인딩되어 있는 객체**다.
+
+📌 _생성자 함수에 의해 생성되는 객체의 프로토타입은 생성자 함수의 prototype 프로퍼티에 바인딩되어 있는 객체다._
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+const chamdom = new Person("Roh");
+```
+
+<br/><br/>
+
+# 7. 프로토타입 체인
+
+자바스크립트는 객체의 프로퍼티(메서드 포함)에 접근하려고 할 때 해당 객체에 접근하려는 프로퍼티가 없다면
+[[Prototype]] 내부 슬롯의 참조를 따라 자신의 부모 역할을 하는 프로토타입의 프로퍼티를 순착작으로 검색한다.<br/>
+이를 **프로토타입 체인**이라 한다.
+
+<br/>
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+Person.prototype.sayHello = function () {
+    console.log(`Hi My name is ${this.name}`);
+};
+
+const chamdom = new Person("Roh");
+```
+
+-   chamdom 객체는 Person.prototype뿐만 아니라 Object.prototype도 상속 받는다.
+
+```jsx
+Object.getPrototypeOf(chamdom) === Person.prototype; // true
+```
+
+-   Person.prototype의 프로토타입은 Object.prototype이다.
+
+<br/>
+
+프로토타입 체인의 최상위에 위치하는 객체는 언제나 **Object.prototype**이다.<br/>
+Object.prototype을 프로토타입 **체인의 종점(end of prototype chain)** 이라 한다.<br/>
+Object.prototype의 프로토타입([[Prototype]] 내부 슬롯 값)은 **null**이다.
+
+<br/>
+
+📌 _**프로토타입 체인**은 상속과 프로퍼티 검색을 위한 메커니즘이다._
+
+📌 _**스코프 체인**은 식별자 검색을 위한 메커니즘이다._
+
+-   프로퍼티가 아닌 식별자는 스코프 체인에서 검색한다.
+
+<br/>
+
+```jsx
+chamdom.hasOwnProperty("name");
+```
+
+1. 스코프 체인에서 chamdom 식별자를 찾는다.
+2. chamdom 객체의 프로토타입 체인에서 hasOwnProperty 메서드를 검색한다.
+
+📌 _**스코프 체인**과 **프로토타입 체인**은 서로 연관없이 별도로 동작하는 것이 아니라 서로 협력하여 식별자와 프로퍼티를 검색하는 데 사용된다._
