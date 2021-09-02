@@ -454,3 +454,185 @@ chamdom.hasOwnProperty("name");
 2. chamdom 객체의 프로토타입 체인에서 hasOwnProperty 메서드를 검색한다.
 
 📌 _**스코프 체인**과 **프로토타입 체인**은 서로 연관없이 별도로 동작하는 것이 아니라 서로 협력하여 식별자와 프로퍼티를 검색하는 데 사용된다._
+
+<br/><br/>
+
+# 8. 오버라이딩과 프로퍼티 섀도잉
+
+프로토타입이 소유한 프로퍼티(메서드 포함)를 프로토타입 프로퍼티, 인스턴스가 소유한 프로퍼티를 인스턴스 프로퍼티라고 부른다.
+
+```jsx
+const Person = (function () {
+    function Person(name) {
+        this.name = name;
+    }
+
+    // 프로토타입 메서드
+    Person.prototype.sayHello = function () {
+        console.log(`Hi! My name is ${this.name}`);
+    };
+
+    return Person;
+})();
+
+const me = new Person("Lee");
+
+// 인스턴스 메서드
+me.sayHello = function () {
+    console.log(`Hey! My name is ${this.name}`);
+};
+
+me.sayHello(); // Hey! My name is Lee
+```
+
+-   인스턴스 메서드 sayHello는 프로토타입 메서드 sayHello를 오버라이딩했고 프로토타입 메서드 sayHello는 가려진다.
+
+📌 _상속관계에 의해 프로퍼티가 가려지는 현상을 **프로퍼티 섀도잉(property shadowing)** 이라 한다._
+
+➡️ 자바스크립트는 오버로딩을 지원하지 않지만 arguments 객체를 사용하여 구현할 수는 있다.
+
+<br/>
+
+```jsx
+// 인스턴스 메서드를 삭제한다.
+delete me.sayHello;
+
+// 프로토타입 체인을 통해 프로토타입 메서드가 삭제되지 않는다.
+delete me.sayHello;
+
+// 프로토타입 메서드가 호출된다.
+me.sayHello(); // Hi! My name is Lee
+```
+
+-   delete 메서드를 사용하여 인스턴스 메서드를 삭제할 수 있다. 하지만, **프로토 타입 메서드는 삭제할 수 없다.**
+
+📌 **_하위 객체를 통해 프로토타입의 프로퍼티를 변경 또는 삭제하는 것은 불가능하다._**
+
+-   하위 객체를 통해 프로토타입에 **get 액세스**는 허용되나 **set 액세스**는 허용되지 않는다.
+-   프로토타입 프로퍼티를 변경 또는 삭제하려면 하위 객체를 통해 프로토타입 체인으로 접근하는 것이 아니라 프로토타입에 **직접 접근**해야 한다.
+
+<br/><br/>
+
+# 9. 프로토타입의 교체
+
+프로토타입은 임의의 다른 객체로 변경할 수 있다. 부모 객체인 프로토타입을 동적으로 변경할 수 있다는 것을 의미한다. 프로토타입은 **생성자 함수** 또는 **인스턴스**에 의해 교체할 수 있다.
+
+## 9.1 생성자 함수에 의한 프로토타입의 교체
+
+```jsx
+const Person = (function () {
+    function Person(name) {
+        this.name = name;
+    }
+
+    Person.prototype = {
+        sayHello() {
+            console.log(`Hi! My name is ${this.name}`);
+        },
+    };
+
+    return Person;
+})();
+
+const chamdom = new Person("Lee");
+```
+
+<p align="center">
+<img width="70%" src="https://user-images.githubusercontent.com/54847910/131852100-a0d0f422-9719-4980-960e-6ea200b74eb3.png"></p>
+
+📌 _프로토타입으로 교체한 객체 리터럴에는 **constructor 프로퍼티**가 없다._
+
+-   따라서 chamdom 객체의 생성자 함수를 검색하면 Person이 아닌 Object가 나온다.
+
+```jsx
+console.log(chamdom.constructor === Person); // false
+console.log(chamdom.constructor === Object); // true
+```
+
+<br/>
+
+프로토타입을 교체하면 constructor 프로퍼티와 생서자 함수 간의 연결이 파괴된다.
+
+-   프로토타입으로 교체한 객체 리터럴에 constructor 프로퍼티를 추가하여 프로토타입의 constructor 프로퍼티를 되살린다.
+
+```jsx
+const Person = (function () {
+    function Person(name) {
+        this.name = name;
+    }
+
+    Person.prototype = {
+        // 생성자 함수의 prototype 프로퍼티를 통해 프로토타입을 교체
+        constructor: Person,
+        sayHello() {
+            console.log(`Hi! My name is ${this.name}`);
+        },
+    };
+
+    return Person;
+})();
+
+const chamdom = new Person("Roh");
+
+console.log(chamdom.constructor === Person); // true
+console.log(chamdom.constructor === Object); // false
+```
+
+## 9.2 인스턴스에 의한 프로토타입의 교체
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+const chamdom = new Person("Roh");
+
+const parent = {
+    sayHello() {
+        console.log(`Hi! My name is ${this.name}`);
+    },
+};
+
+// chamdom 객체의 프로토타입을 parent 객체로 교체한다.
+Object.setPrototypeOf(chamdom, parent);
+// chamdom.__proto__ = parent;
+
+chamdom.sayHello(); // Hi! My name is Lee
+```
+
+<p align="center">
+<img width="70%" src="https://user-images.githubusercontent.com/54847910/131852445-9a614f85-54de-499f-8fc0-3bbdb3500332.png">
+</p>
+
+📌 **_Person 생성자 함수의 prototype 프로퍼티가 교체된 프로토타입을 가리키지 않는다._**
+
+-   constructor 프로퍼티를 추가하고 생성자 함수의 prototype 프로퍼티를 재설정 하여야 한다.
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+const me = new Person("Roh");
+
+const parent = {
+    // constructor 프로퍼티와 생성자 함수 간의 연결을 설정
+    constructor: Person,
+    sayHello() {
+        console.log(`Hi! My name is ${this.name}`);
+    },
+};
+
+// 생성자 함수의 prototype 프로퍼티와 프로토타입간의 연결을 설정
+Person.prototype = parent;
+
+Object.setPrototypeOf(chamdom, parent);
+// chamdom.__proto__ = parent;
+
+console.log(chamdom.constructor === Person); // true
+console.log(Person.prototype === Object.getPrototypeOf(chamdom)); // true
+```
+
+<br/>
+
+➡️ **프로토타입 교체를 통해 객체 간의 상속 관계를 동적으로 변경하는 것은 꽤나 번거롭다. 따라서 프로토타입은 직접 교체하지 않는 것이 좋다.**
