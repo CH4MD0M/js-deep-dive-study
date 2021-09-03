@@ -636,3 +636,150 @@ console.log(Person.prototype === Object.getPrototypeOf(chamdom)); // true
 <br/>
 
 ➡️ **프로토타입 교체를 통해 객체 간의 상속 관계를 동적으로 변경하는 것은 꽤나 번거롭다. 따라서 프로토타입은 직접 교체하지 않는 것이 좋다.**
+
+<br/><br/>
+
+# 10. instanceof 연산자
+
+📌 _instanceof 연산자는 프로토타입의 constructor 프로퍼티가 가리키는 생성자 함수를 찾는 것이 아니라,<br/>
+**생성자 함수의 prototype에 바인딩된 객체가 프로토타입 체인 상에 존재하는 지 확인한다.**_
+
+```jsx
+객체 instanceof 생성자 함수
+```
+
+-   우변의 생성자 함수의 prototype에 바인딩된 객체가 좌변의 **객체의 프로토타입 체인 상에 존재하면** **true**로, 그렇지 않은 경우는 **false**로 평가된다.
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+const me = new Person("Lee");
+
+// me 객체의 프로토타입 체인 상에 존재하므로 true로 평가된다.
+console.log(me instanceof Person); // true
+console.log(me instanceof Object); // true
+```
+
+<br/>
+
+### ✏️ 인스턴스에 의한 프로토타입 교체시
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+const me = new Person("Roh");
+
+const parent = {};
+
+// 프로토타입 교체
+Object.setPrototypeOf(me, parent);
+
+// Person 생성자 함수와 parent 객체는 연결되어 있지 않다.
+console.log(Person.prototype === parent); // false
+console.log(parent.constructor === Person); // false
+
+// Person.prototype이 me 객체의 프로토타입 체인 상에 존재하지 않기 때문에 false로 평가된다.
+console.log(me instanceof Person); // false
+console.log(me instanceof Object); // true
+```
+
+-   프로토타입이 교체되어 프로토타입과 생성자 함수간의 연결이 파괴된다.
+-   **Person.prototype이 me 객체의 프로토타입 체인 상에 존재하지 않기 때문에** me instanceof Person은 **false**로 평가된다.
+-   **parent 객체를 Person 생성자 함수의 prototype 프로퍼티에 바인딩하면** me instanceof Person은 **true**로 평가된다.
+
+### ✏️ 생성자 함수에 의한 프로토타입 교체시
+
+```jsx
+const Person = (function () {
+    function Person(name) {
+        this.name = name;
+    }
+
+    Person.prototype = {
+        sayHello() {
+            console.log(`Hi! My name is ${this.name}`);
+        },
+    };
+
+    return Person;
+})();
+
+const me = new Person("Roh");
+
+// constructor 프로퍼티와 생성자 함수 간의 연결이 파괴되어도
+// instanceof 연산자는 영향을 받지 않는다.
+console.log(me.constructor === Person); //false
+
+console.log(me instanceof Person); // true
+console.log(me instanceof Object); // true
+```
+
+<br/>
+
+---
+
+### 📢 정리
+
+-   생성자 함수에 의해 프로토타입이 교체되면 constructor 프로퍼티와 생성자 함수 간의 연결이 파괴되어도 생성자 함수의 prototype 프로퍼티와 프로토타입 간의 연결은 파괴되지 않으므로 **instanceof는 아무런 영향을 받지 않는다.**
+-   인스턴스에 의해 프로토타입이 교체되면 생성자 함수와 프로토타입 간의 연결이 파괴되기 때문에 **instanceof는 영향을 받게되어** 명시적으로 생성자 함수의 prototype 프로퍼티에 교체할 프로토타입을 바인딩해야 한다.
+
+<br/><br/>
+
+# 11. 직접 상속
+
+## 11.1 Object.create에 의한 직접 상속
+
+```jsx
+// 프로토타입인 null인 객체를 생성.
+// 생성된 객체는 프로토타입 체인의 종점에 위치한다.
+let obj = Object.create(null);
+
+// obj = {};와 동일하다.
+obj = Object.create(Object.prototype);
+
+// obj = { x: 1 };와 동일하다.
+obj = Object.create(Object.prototype, {
+    x: { value: 1, writable: true, enumerable: true, configurable: true },
+});
+
+// 임의의 객체를 직접 상속.
+const myProto = { x: 10 };
+obj = Object.create(myProto);
+
+// 생성자 함수
+// obj = new Person('Roh');와 동일하다.
+function Person(name) {
+    this.name = name;
+}
+obj = Object.create(Person.prototype);
+obj.name = "Roh";
+```
+
+Object.create 메서드는 첫 번째 매개변수에 전달한 객체의 프로토타입 체인에 속하는 객체를 생성한다.<br/>
+즉, 객체를생성하면서 직접적으로 상속을 구현한다.
+
+### ✏️ Object.create의 장점
+
+-   new 연산자 없이도 객체를 생성할 수 있다.
+-   프로토타입을 지정하면서 객체를 생성할 수 있다.
+-   객체 리터럴에 의해 생성된 객체도 상속받을 수 있다.
+
+## 11.2 객체 리터럴 내부에서 \_\_proto\_\_에 의한 직접 상속
+
+ES6에서는 객체 리터럴 내부에서 \_\_proto\_\_ 접근자 프로퍼티를 사용하여 직접 상속을 구현할 수 있다.
+
+```jsx
+const myProto = { x: 10 };
+
+const obj = {
+    y: 20,
+    __proto__: myProto,
+};
+
+console.log(obj.x, obj.y); // 10 20
+console.log(Object.getPrototypeOf(obj) === myProto); // true
+```
