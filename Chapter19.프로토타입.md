@@ -783,3 +783,135 @@ const obj = {
 console.log(obj.x, obj.y); // 10 20
 console.log(Object.getPrototypeOf(obj) === myProto); // true
 ```
+
+<br/><br/>
+
+# 12. 정적 프로퍼티/메서드
+
+**정적(static) 프로퍼티/메서드**는 **생성자 함수로 인스턴스를 생성하지 않아도** 참조, 호출할 수 있는 프로퍼티/메서드를 말한다.
+
+```jsx
+// 생성자 함수
+function Person(neam) {
+    this.name = name;
+}
+
+// 프로토타입 메서드
+Person.prototype.greet = function () {
+    console.log(`Hello, My name is ${this.name}!`);
+};
+
+// 정적 프로퍼티
+Person.staticProp = "statuc prorp";
+
+// 정적 메서드
+Person.staticMethod = function () {
+    console.log("staticMethod");
+};
+
+const man = new Person("Roh");
+
+// 생성자 함수에 추가한 정적 프로퍼티/메서드는 생성자 함수로 참조/호출한다.
+Person.staticMethod(); // staticMethod
+
+// 정적 프로퍼티/메서드는 생성자 함수로 생성한 인스턴스에서 호출할 수 없다.
+// 인스턴스에서 호출하기 위해서는 인스턴스와 같은 프로토타입 체인상에 있어야 한다.
+man.staticMethod(); // TypeError: man.staticMethod is not a function
+```
+
+📌 _정적 프로퍼티/메서드는 **인스턴스의 프로토타입 체인**에 속한 객체의 프로퍼티/메서드가 아니므로 인스턴스로 접근할 수 없다._
+
+-   Object.create 메서드는 Object 생성자 함수의 **정적 메서드**고 Object.prototype.hasOwnProperty 메서드는 object.prototype의 **메서드**다.
+-   따라서, 인스턴스와 같은 프로토타입 체인에 있지 않으므로 **Object.create 메서드**는 인스턴스에서 호출할 수 없다.
+-   Object.prototype.hasOwnProperty 메서드는 프로토타입 체인의 종점 Object.prototype의 메서드이므로 모든 객체가 호출할 수 있다.
+
+<br/>
+
+```jsx
+function Foo() {}
+
+// 프로토타입 메서드
+// this를 참조하지 않는 프로토타입 메서드는 정적 메서드로 변경하여도 동일한 효과를 얻을 수 있다.
+Foo.prototype.x = function () {
+    console.log("x");
+};
+
+const foo = new Foo();
+// 프로토타입 메서드를 호출하기 위해서는 인스턴스를 생성해야 한다.
+foo.x(); // x
+
+// 정적 메서드
+Foo.x = function () {
+    console.log("x");
+};
+
+// 정적 메서드는 인스턴스를 생성하지 않아도 호출할 수 있다.
+Foo.x(); // x
+```
+
+-   인스턴스가 호출한 인스턴스/프로토타입 메서드 내에서 this는 인스턴스를 가리킨다.
+-   **this를 사용하지 않는** 인스턴스/프로토타입 메서드는 **정적 메서드로 변경하여도 동일한 효과를 얻을 수 있다.**
+-   **프로토타입 메서드**를 호출하려면 인스턴스를 생성해야 하지만 **정적 메서드**는 인스턴스를 생성하지 않아도 호출할 수 있다.
+
+<br/><br/>
+
+# 13. 프로퍼티 존재 확인
+
+## 13.1 in 연산자
+
+**in 연산자**는 객체 내에 **특정 프로퍼티**가 존재하는지 여부를 확인한다.
+
+```jsx
+const person = {
+    name: "Roh",
+    address: "Incheon",
+};
+
+console.log("name" in person); // true
+console.log("address" in person); // ture
+console.log("age" in person); // false
+```
+
+```jsx
+console.log("toString" in person); // true
+```
+
+-   **in 연산자**는 person객체가 속한 프로토타입 체인 상에 존재하는 모든 프로토타입에서 toString 프로퍼티를 검색했다.
+
+📌 _**in 연산자**는 확인 대상 객체의 프로퍼티뿐만 아니라 확인 대상 객체가 **상속받은 모든 프로토타입의 프로퍼티를 확인하므로** 주의가 필요하다._
+
+<br/>
+
+### ✏️ Reflect.has 메서드
+
+```jsx
+const person = { name: "Roh" };
+
+console.log(Reflect.has(person, "name")); //true
+console.log(Reflect.has(person, "toString")); //true
+```
+
+ES6에 도입된 **Reflect.has 메서드**를 활용할 수도 있다. **Reflect.has 메서드**는 in 연산자와 동일하게 동작한다.
+
+<br/>
+
+## 13.2 Object.prototype.hasOwnProperty 메서드
+
+```jsx
+console.log(person.hasOwnProperty('name'); // true
+console.log(person.hasOwnProperty('age'); // true
+
+console.log(person.hasOwnProperty('toString'); // false
+```
+
+인수로 전달받은 프로퍼티 키가 객체 고유의 프로퍼티 키인 경우에만 **true**를 반환하고 상속받은 프로토타입의 프로퍼티 키인 경우 **false**를 반환한다.
+
+<br/><br/>
+
+---
+
+<br/>
+
+## 📗 참고
+
+-   자바스크립트 deep dive
