@@ -908,6 +908,70 @@ console.log(person.hasOwnProperty('toString'); // false
 
 <br/><br/>
 
+# 14. 프로퍼티 열거
+
+## 14.1 for ... in 문
+
+객체의 모든 프로퍼티를 순회하며 열겨(enumeration)하려면 for...in문을 사용한다.
+
+```jsx
+for(변수선언문 in 객체) {...}
+```
+
+```jsx
+const person = {
+    name: "Roh",
+    address: "Incheon",
+};
+
+for (const key in person) {
+    console.log(key + ": " + person[key]);
+}
+// name: Roh
+// address: Incheon
+```
+
+for...in 문은 in 연산자처럼 **순회 대상 객체의 프로퍼티뿐만 아니라 상속받은 프로토타입의 프로퍼티까지 열거한다.**
+
+-   toString과 같은 **Object.prototype의 프로퍼티**는 열거되지는 않는다. toString은 **[[Enumerable]]의 값이 false이기 때문에** 열거할 수 없는 프로퍼티이기 때문이다.
+-   프로퍼티 어트리뷰트 **[[Enumerable]]**은 **프로퍼티의 열거 가능 여부**를 나타내며 불리언 값을 갖는다.
+
+📌 _for...in 문은 객체의 프로토타입 체인 상에 존재하는 모든 프로토타입의 프로퍼티 중에서 **프로퍼티 어트리뷰트[[Enumerable]]의 값이 true인 프로퍼티**를 순회하면 열거한다._
+
+## 14.2 Object.keys/values/entries 메서드
+
+**객체 자신의 고유 프로파티만 열거하기 위해서**는 for...in 문을 사용하는 것보다 **Object.keys/values/
+entries 메서드**를 사용하는 것을 권장한다.
+
+-   for...in문은 객체 자신의 고유 프로퍼티뿐만 아니라 상속받은 프로퍼티도 열거하기 때문에 Object.prototype.hasOwnProperty 메서드를 사용해 추가 처리가 필요하기 때문이다.
+
+```jsx
+const person = {
+    name: "Roh",
+    address: "Incheon",
+    __proto__: { age: 26 },
+};
+
+// Object.keys
+console.log(Object.keys(person)); // ["name", "address"]
+
+// Object.values
+console.log(Object.values(person)); // ["Roh", "Incheon"]
+
+// Object.entries
+console.log(Object.entries(person)); // [["name", "Roh"], ["address", "Incheon"]]
+Object.entries(person).forEach(([key, value]) => console.log(key, value));
+/*
+name Roh
+address Incheon
+*/
+```
+
+-   **Object.keys 메서드**는 **객체 자신의 열거 가능한(enumerable)** **프로퍼티 키**를 배열로 반환한다.
+-   **Object.values 메서드**는 **객체 자신의 열거 가능한(enumerable)** **프로퍼티 값**을 배열로 반환한다.
+-   **Object.entries 메서드**는 **객체 자신의 열거 가능한(enumerable)** **프로퍼티 키와 값의 쌍의 배열을 배열로** 반환한다.
+    <br/><br/>
+
 ---
 
 <br/>
