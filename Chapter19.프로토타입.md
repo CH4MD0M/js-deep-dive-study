@@ -47,13 +47,13 @@ function Person(birthYear) {
     };
 }
 
-const kim = new Person(27);
-const park = new Person(25);
+const kim = new Person(1994);
+const park = new Person(1996);
 
 console.log(kim.calcAge === park.calcAge); // false
 
-console.log(kim.calcAge()); // 1994
-console.log(park.calcAge()); // 1996
+console.log(kim.calcAge()); // 27
+console.log(park.calcAge()); // 25
 ```
 
 -   Person 생성자 함수는 인스턴스를 생성할 때마다 calcAge 메서드를 중복 생성하고 모든 인스턴스가 중복 소유한다.
@@ -69,16 +69,16 @@ function Person(birthYear) {
 }
 
 Person.prototype.calcAge = function () {
-    return 2020 - this.birthYear;
+    return 2021 - this.birthYear;
 };
 
-const kim = new Person(27);
-const park = new Person(25);
+const kim = new Person(1994);
+const park = new Person(1996);
 
 console.log(kim.calcAge === park.calcAge); // true
 
-console.log(kim.calcAge()); // 1994
-console.log(park.calcAge()); // 1996
+console.log(kim.calcAge()); // 27
+console.log(park.calcAge()); // 25
 ```
 
 -   Person 생성자 함수가 생성한 모든 **인스턴스**는 자신의 상위(부모) 객체 역할을 하는 **Person.prototype**의 <u>모든 프로퍼티와 메서드를 상속받는다</u>.
