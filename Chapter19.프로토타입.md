@@ -970,7 +970,8 @@ address Incheon
 -   **Object.keys 메서드**는 **객체 자신의 열거 가능한(enumerable)** **프로퍼티 키**를 배열로 반환한다.
 -   **Object.values 메서드**는 **객체 자신의 열거 가능한(enumerable)** **프로퍼티 값**을 배열로 반환한다.
 -   **Object.entries 메서드**는 **객체 자신의 열거 가능한(enumerable)** **프로퍼티 키와 값의 쌍의 배열을 배열로** 반환한다.
-    <br/><br/>
+
+<br/><br/>
 
 ---
 
