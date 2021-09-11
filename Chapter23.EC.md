@@ -1,4 +1,4 @@
-📌 **_실행 컨텍스트(execution context)는 scope, hoisting, function, this, closure 등의 동작 원리를 담고 있는 자바스크립트의 핵심 원리이다._**
+📌 _**실행 컨텍스트(execution context)는 scope, hoisting, function, this, closure 등의 동작 원리를 담고 있는 자바스크립트의 핵심 원리이다.**_
 
 # 1. 소스코드의 타입
 
@@ -17,14 +17,14 @@ ECMAScript 사양은 소스코드를 4가지 타입으로 구분한다.
 
 📌 _자바스크립트 엔진은 소스코드를 **"소스코드의 평가"** 와 **"소스코드의 실행"** 2개의 과정으로 나누어 처리한다._
 
-### ✔️ **소스코드 평가 과정**
+### ✔️ 소스코드 평가 과정
 
 -   실행 컨텍스트를 생성한다.
 -   변수, 함수 등의 선언문만 먼저 실행하여 생성된 변수나 함수 식별자를 키로 실행 컨텍스트가 관리하는 **스코프(렉시컬 스코프의 환경 레코드)** 에 등록한다.
 
 📌 _**소스 코드의 평가 과정이 끝나면 선언문을 제외한 소스코드가 순차적으로 실행된다(런타임이 시작된다).**_
 
-### ✔️ **소스코드 실행 과정**
+### ✔️ 소스코드 실행 과정
 
 -   변수나 함수의 참조를 실행 컨텍스트가 관리하는 스코프에서 검색해서 취득한다.
 -   변수 값의 변경 등 소스코드의 실행 결과는 다시 실행 컨텍스트가 관리하는 스코프에 등록된다.
@@ -97,12 +97,12 @@ x = 1;
 <img width="30%" src="https://user-images.githubusercontent.com/54847910/132620055-990dd1ed-52b1-4921-be0b-1c3e84843423.png">
 </p>
 
-### ✔️ **Environment Record(환경 레코드)**
+### ✔️ Environment Record(환경 레코드)
 
 -   스코프에 포함된 식별자를 등록하고 식별자에 바인딩된 값을 관리하는 저장소다.
 -   환경 레코드는 **소스코드의 타입에 따라** 관리하는 내용에 차이가 있다.
 
-### ✔️ **Outer Lexical Environment Reference(외부 렉시컬 환경에 대한 참조)**
+### ✔️ Outer Lexical Environment Reference(외부 렉시컬 환경에 대한 참조)
 
 -   상위 스코프를 가리킨다.
 -   외부 렉시컬 환경에 대한 참조를 통해 단방향 링크드 리스트인 **스코프 체인(scope chain)** 을 구현한다.
@@ -149,27 +149,27 @@ foo(20); // 42
     2. **this 바인딩**
     3. **외부 렉시컬 환경에 대한 참조 결정**
 
-### **1. 전역 실행 컨텍스트 생성**
+### 1. 전역 실행 컨텍스트 생성
 
 먼저 비어있는 **전역 실행 컨텍스트(Global Execution Context)** 를 생성하여 **실행 컨텍스트 스택(Execution Context Stack)** 에 푸시한다.
 
 <p align="center">
-<img width="30%" src="https://user-images.githubusercontent.com/54847910/132869709-0461bedb-a301-4981-8880-66594f57b7c1.png">
+<img width="25%" src="https://user-images.githubusercontent.com/54847910/132869709-0461bedb-a301-4981-8880-66594f57b7c1.png">
 </p>
 
 <br/>
 
-### **2. 전역 렉시컬 환경 생성**
+### 2. 전역 렉시컬 환경 생성
 
 **전역 렉시컬 환경(Global Lexical Environment)** 을 생성하고 **전역 실행 컨텍스트(Global Execution Context)** 에 바인딩한다.
 
 <p align="center">
-<img width="60%" src="https://user-images.githubusercontent.com/54847910/132869792-97975631-f961-4ad1-b658-06ef07644eaf.png">
+<img width="50%" src="https://user-images.githubusercontent.com/54847910/132869792-97975631-f961-4ad1-b658-06ef07644eaf.png">
 </p>
 
 <br/>
 
-#### **2.1. 전역 환경 레코드 생성**
+#### 2.1. 전역 환경 레코드 생성
 
 **전역 환경 레코드(Global Environment Record)** 는 전역 변수를 관리하는 **전역 스코프**, 전역 객체의 **빌트인 전역 프로퍼티**와 **빌트인 전역 함수**, **표준 빌트인 객체**를 제공한다.
 
@@ -192,7 +192,7 @@ foo(20); // 42
 
 <br/>
 
-##### **2.1.1. 객체 환경 레코드 생성**
+##### 2.1.1. 객체 환경 레코드 생성
 
 **객체 환경 레코드(Object Environment Record)** 는 **BindingObject**라고 부르는 객체와 연결된다.
 
@@ -209,7 +209,7 @@ function foo(a) {
 ```
 
 <p align="center">
-<img width="70%" src="https://user-images.githubusercontent.com/54847910/132869928-362003c1-9c2b-4156-ad47-bf89ddb3fe2b.png">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132869928-362003c1-9c2b-4156-ad47-bf89ddb3fe2b.png">
 </p>
 
 📌 _**변수선언문**은 BindingObject를 통해 암묵적으로 **undefined**를 바인딩하지만, **함수선언문**은 생성된 함수 객체를 즉시 할당한다._
@@ -218,31 +218,31 @@ function foo(a) {
 
 <br/>
 
-##### **2.1.2. 선언적 환경 레코드 생성**
+##### 2.1.2. 선언적 환경 레코드 생성
 
 **선언적 환경 레코드(Declarative Environment Record)** 는 let, const 키워드로 선언한역 변수가 등록되고 관리된다.
 
 let, const 키워드로 선언한 변수는 런타임에 컨트롤이 변수 선언문에 도달하기 전까지 **일시적 사각지대**에 빠지기 때문에 참조할 수 없다.
 
 <p align="center">
-<img width="70%" src="https://user-images.githubusercontent.com/54847910/132870013-063c2584-837c-4f5c-adf4-d72e3d65dd8b.png">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132870013-063c2584-837c-4f5c-adf4-d72e3d65dd8b.png">
 </p>
 
 <br/>
 
-#### 2.2. **this 바인딩**
+#### 2.2. this 바인딩
 
 **전역 환경 레코드(Global Environment Record)** 의 **[[GlobalThisValue]] 내부 슬롯**에 this가 바인딩된다.
 
 📌 _this 바인딩은 **환경 레코드(전역 환경 레코드, 함수 환경 레코드)** 에만 존재한다._
 
 <p align="center">
-<img width="70%" src="https://user-images.githubusercontent.com/54847910/132870210-34125100-245c-45c6-86ee-cebb2acb4f67.png">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132870210-34125100-245c-45c6-86ee-cebb2acb4f67.png">
 </p>
 
 <br/>
 
-#### 2.3. **외부 렉시컬 환경에 대한 참조 결정**
+#### 2.3. 외부 렉시컬 환경에 대한 참조 결정
 
 **외부 렉시컬 환경에 대한 참조(OuterLexicalEnvironment Reference)** 는 현재 평가 중인 소스코드를 포함하는 외부 소스코드의 **렉시컬 환경(상위 스코프)** 를 가리킨다.
 
@@ -253,8 +253,112 @@ let, const 키워드로 선언한 변수는 런타임에 컨트롤이 변수 선
 -   전역 렉시컬 환경이 스코프 체인이 종점에 존재함을 의미한다.
 
 <p align="center">
-<img width="70%" src="https://user-images.githubusercontent.com/54847910/132870309-8ef8df85-10d8-4537-b828-2f6a462f9e6a.png">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132870309-8ef8df85-10d8-4537-b828-2f6a462f9e6a.png">
 </p>
+
+<br/>
+
+## 6.3 전역 코드 실행
+
+변수 할당문이 실행되어 전역 변수 x, y에 값이 할당된다. 그리고 foo함수가 호출된다.
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132939506-2983ac07-9397-4261-9828-352e5d926dfd.png">
+</p>
+<br/>
+
+### ✏️ 식별자 결정
+
+변수 할당문 또는 함수 호출문을 실행하려면 먼저 변수 또는 함수 이름이 **선언된 식별자인지 확인**해야 한다. 선언되지 않는 식별자는 참조할 수 없으므로 할당이나 호출도 할 수 없기 때문이다.
+
+동일한 이름의 식별자가 다른 스코프에도 여러개 존재할 수 있다. 따라서 **어느 스코프의 식별자인지**를 판별하고 결정할 필요가 있는데 이를 **식별자 결정(identifier resolution)** 이라고 한다.
+
+📌 **_이것이 스코프 체인의 동작 원리다._**
+
+<br/>
+
+## 6.4 foo 함수 코드 평가
+
+현재 상황은 foo **함수를 호출하기 직전**이다. foo 함수가 호출되면 전역 코드의 실행을 일시 중단하고 foo 함수 내부로 코드의 **제어권이 이동**한다. 그리고 함수 코드를 평가하기 시작한다.
+
+1. 함수 실행 컨텍스트 생성
+2. 함수 렉시컬 환경 생성
+    1. 함수 환경 레코드 생성
+    2. this 바인딩
+    3. 외부 렉시컬 환경에 대한 참조 결정
+
+<br/>
+
+### 1. 함수 실행 컨텍스트 생성
+
+foo **함수 실행 컨텍스트(Function Execution Context)** 를 생성한다.
+
+📌 _생성된 **함수 실행 컨텍스트(Function Execution Context)** 는 **함수 렉시컬 환경(Function Lexical Emvironment)** 이 완성된 다음 **실행 컨텍스트 스택(Execution Context Stack)** 에 푸시된다._
+
+-   이때 foo 함수 실행 컨텍스트는 실행 컨텍스트 스탱의 최상위, 즉 **실행 중인 실행 컨텍스트(running execution context)** 가 된다.
+
+<p align="center">
+<img width="25%" src="https://user-images.githubusercontent.com/54847910/132939523-104e4821-da01-4780-a575-7c858664cc21.png">
+</p>
+
+<br/>
+
+### 2. 함수 렉시컬 환경 생성
+
+foo **함수 렉시컬 환경(Function Lexical Environment)** 을 생성하고 foo **함수 실행 컨텍스트(Function Execution Context)** 에 바인딩한다.
+
+-   렉시컬 환경은 환경 레코드와 외부 렉시컬에 대한 참조로 구성된다.
+
+<p align="center">
+<img width="50%" src="https://user-images.githubusercontent.com/54847910/132939573-a8c0f010-536c-486d-abaf-a217f7b3be4a.png">
+</p>
+
+<br/>
+
+#### 2.1 함수 환경 레코드 생성
+
+**함수 환경 레코드(Function Environment Record)** 는 매개변수, arguments 객체, 함수 내부에서 선언한 지역 변수와 중첩 함수를 등록하고 관리한다.
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132939588-5f857ba1-465a-47d6-9a61-dd4ef830c915.png">
+</p>
+
+<br/>
+
+#### 2.2 this 바인딩
+
+**함수 환경 레코드(Function Environment Record)** 의 **[[ThisValue]] 내부 슬롯**에 this가 바인딩된다.
+
+-   [[ThisValue]] 내부 슬롯에 바인딩될 객체는 함수 호출 방식에 따라 결정된다.
+-   foo 함수는 일반 함수로 호출되었으므로 this는 전역 객체를 가리킨다. 따라서 함수 환경 레코드의 [[ThisValue]] 내부 슬롯에는 전역 객체가 바인딩 된다.
+
+📌 _함수 내부에서 this를 참조하면 함수 환경 레코드(Function Environment Record)의 **[[ThisValue]] 내부 슬롯에 바인딩되어 있는 객체**가 반환된다._
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132939608-2ce49a90-b263-4178-9b32-d7afc670e43e.png">
+</p>
+
+<br/>
+
+#### 2.3 외부 렉시컬 환경에 대한 참조 결정 ⭐
+
+📌 _**외부 렉시컬 환경에 대한 참조 결정(Outer Lexical Environment Reference)은 현재 호출된 함수가 선언될 당시의 렉시컬 환경(Lexical Environment)를 참조한다.**_
+
+-   foo 함수는 전역 코드에 정의된 전역 함수다.
+-   foo 함수 정의는 전역 코드 평가 시점에 평가된다.
+-   이 시점의 실행 중인 실행 컨텍스트는 **전역 실행 컨텍스트(Global Execution Context)** 다.
+
+따라서 **외부 렉시컬 환경에 대한 참조(Outer Lexical Environment Reference)** 에는 **전역 렉시컬 환경(Global Lexical Environment)** 이 할당된다.
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132939624-f1fef5d6-9b41-41cc-b727-be58c3e0696a.png">
+</p>
+
+자바스크립트 엔진은 함수 정의를 평가하여 함수 객체를 생성할 때 함수의 상위 스코프를 함수 객체의 내부 슬롯 [[Environment]]에 저장한다.
+
+함수 렉시컬 환경의 외부 렉시컬 환경에 대한 첨조에 할당되느느것은 바로 함수의 상위 스코프를 가리키는 함수 객체의 내부 슬로 [[Environment]]에 저장된 렉시컬 환경의 참조다.
+
+📌 **_함수 객체의 내부 슬롯 [[Environment]]가 바로 렉시컬 스코프를 구현하는 메커니즘이다._**
 
 <br/><br/>
 
