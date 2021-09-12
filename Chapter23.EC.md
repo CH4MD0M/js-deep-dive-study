@@ -149,6 +149,8 @@ foo(20); // 42
     2. **this 바인딩**
     3. **외부 렉시컬 환경에 대한 참조 결정**
 
+<br/>
+
 ### 1. 전역 실행 컨텍스트 생성
 
 먼저 비어있는 **전역 실행 컨텍스트(Global Execution Context)** 를 생성하여 **실행 컨텍스트 스택(Execution Context Stack)** 에 푸시한다.
@@ -156,8 +158,6 @@ foo(20); // 42
 <p align="center">
 <img width="25%" src="https://user-images.githubusercontent.com/54847910/132869709-0461bedb-a301-4981-8880-66594f57b7c1.png">
 </p>
-
-<br/>
 
 ### 2. 전역 렉시컬 환경 생성
 
@@ -192,7 +192,7 @@ foo(20); // 42
 
 <br/>
 
-##### 2.1.1. 객체 환경 레코드 생성
+#### 2.1.1. 객체 환경 레코드 생성
 
 **객체 환경 레코드(Object Environment Record)** 는 **BindingObject**라고 부르는 객체와 연결된다.
 
@@ -218,7 +218,7 @@ function foo(a) {
 
 <br/>
 
-##### 2.1.2. 선언적 환경 레코드 생성
+#### 2.1.2. 선언적 환경 레코드 생성
 
 **선언적 환경 레코드(Declarative Environment Record)** 는 let, const 키워드로 선언한역 변수가 등록되고 관리된다.
 
@@ -359,6 +359,91 @@ foo **함수 렉시컬 환경(Function Lexical Environment)** 을 생성하고 f
 함수 렉시컬 환경의 외부 렉시컬 환경에 대한 첨조에 할당되느느것은 바로 함수의 상위 스코프를 가리키는 함수 객체의 내부 슬로 [[Environment]]에 저장된 렉시컬 환경의 참조다.
 
 📌 **_함수 객체의 내부 슬롯 [[Environment]]가 바로 렉시컬 스코프를 구현하는 메커니즘이다._**
+
+<br/>
+
+## 6.5 foo 함수 코드 실행
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132991459-b7ee4e99-79b6-498b-a6f2-5c11d8470664.png">
+</p>
+
+매개변수에 인수가 할당되고, 변수 할당문이 실행되어 지역 변수 x, y에 값이 할당된다. 그리고 **bar함수가 호출**된다.
+
+-   이때 식별자 결정을 위해 실행 중인 실행 컨텍스트의 렉시컬 환경에서 식별자를 검색하기 시작한다.
+-   만약 실행 중인 실행 컨텍스트의 렉시컬 환경에서 식별자를 검색할 수 없으면 외부 렉시컬 환경에 대한 참조가 가리키는 렉시컬 환경으로 이동하여 식별자를 검색한다.
+
+<br/>
+
+## 6.6 bar 함수 코드 평가
+
+bar 함수가 호출되면 bar 함수 내부로 코드의 제어권이 이동한다. 실행 컨텍스트와 렉시컬 환경의 생성 과정은 foo 함수와 동일하다.
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132991478-ce05d557-7ee2-4674-ad54-e1aa72d6fb44.png">
+</p>
+
+<br/>
+
+## 6.7 bar 함수 코드 실행
+
+런타임이 시작되어 bar 함수의 소스코드가 순차적으로 실행되기 시작한다. 매개변수에 인수가 할당되고, 변수 할당문이 실행되어 지역 변수 z에 값이 할당된다.
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132991491-5ec457b0-7d8b-496b-ab04-92c227ea810a.png">
+</p>
+
+<br/>
+
+## 6.8 bar함수 코드 실행 종료
+
+console.log 메서드가 호출되고 종료도면 더는 실행할 코드가 없으므로 bar 함수 코드의 실행이 종료된다.
+
+bar 함수의 실행 컨텍스트가 실행 컨텍스트 스택에서 **팝(pop)** 되고, 함수 foo의 실행 컨텍스트가 **실행중인 컨텍스트(최상위 컨텍스트)** 가 된다.
+
+<br/>
+
+## 6.9 foo함수 코드 실행 종료
+
+bar 함수가 종료되면 더는 실행할 코드가 없으므로 foo 함수 코드의 실행이 종료된다.
+
+foo 함수의 실행 컨텍스트가 실행 컨텍스트 스택에서 **팝(pop)** 되고, 전역 실행 컨텍스트가 **실행중인 컨텍스트(최상위 컨텍스트)** 가 된다.
+
+<br/>
+
+## 6.10 전역 코드 실행 종료
+
+foo 함수가 종료되면 더는 실행할 전역 코드가 없으므로 전역 코드의 실행이 종료되고 전역 실행 컨텍스트가 실행 컨텍스트 스택에서 팝(pop)된다.
+
+<br/><br/>
+
+# 7. 실행 컨텍스트와 블록 레벨 스코프
+
+```jsx
+let x = 1;
+if (true) {
+    let x = 10;
+    console.log(x); // 10
+}
+
+console.log(x); // 1
+```
+
+if 문의 코드 블록이 실행되면 if 문의 코드 블록을 위한 **블록 레벨 스코프(block-level scope)**를 생성해야 한다.
+
+이를 위해 **선언적 환경 레코드(Declarative Environment Record)** 를 갖는 **렉시컬 환경(Lexical Environment)** 을 새롭게 생성하여 기존의 전역 렉시컬 환경을 교체한다.
+
+if 문의 코드 블록을 위한 렉시컬 환경의 **외부 렉시컬 환경에 대한 참조(Outer Lexical Environment Reference)** 는 if문이 실행되기 이전의 전역 렉시컬 환경(Global Lexical Environment)을 가리킨다.
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132991350-6551d4c9-9da7-4777-bcae-be4803bd7f6f.png">
+</p>
+
+if 문 코드 블록의 실행이 종료되면 if 뭄의 코드 블록이 실행되기 이전의 렉시컬 환경으로 되돌린다.
+
+<p align="center">
+<img width="100%" src="https://user-images.githubusercontent.com/54847910/132991363-99d42a3c-91c0-4de7-8fed-1cd69df7af42.png">
+</p>
 
 <br/><br/>
 
