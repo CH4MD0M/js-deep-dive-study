@@ -122,11 +122,51 @@ function Person(age) {
 
     // 3. 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
 }
+const me = new Person(26);
+console.log(me); // Person {age:26, getBirthYear: f}
 ```
+
+<br/>
 
 📌 _**명시적으로 다른 객체를 반환하면** this가 반환되지 못하고 return 문에 명시한 객체가 반환된다._
 
+```jsx
+function Person(age) {
+    // 1. 암묵적으로 인스턴스가 생성되고 this에 바인딩된다.
+
+    // 2. this에 바인딩되어 있는 인스턴스를 초기화한다.
+    this.age = age;
+    this.getBirthYear = function () {
+        return 2021 - this.age;
+    };
+
+    // 3. 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+    // 명시적으로 객체를 반환하면 암묵적인 this 반환이 무시된다.
+    return {};
+}
+const me = new Person(26);
+console.log(me); // {}
+```
+
 📌 _**명시적으로 원시 값을 반환하면** 원시 값 반환은 무시되고 암묵적으로 this가 반환된다._
+
+```jsx
+function Person(age) {
+    // 1. 암묵적으로 인스턴스가 생성되고 this에 바인딩된다.
+
+    // 2. this에 바인딩되어 있는 인스턴스를 초기화한다.
+    this.age = age;
+    this.getBirthYear = function () {
+        return 2021 - this.age;
+    };
+
+    // 3. 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+    // 명시적으로 원시 값을 반환하면 원시 값은 무시되고 암묵적으로 this가 반환된다.
+    return 100;
+}
+const me = new Person(26);
+console.log(me); // Person {age:26, getBirthYear: f}
+```
 
 <br/>
 
