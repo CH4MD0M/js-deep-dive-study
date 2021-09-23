@@ -193,6 +193,350 @@ console.log(me);
 -   클래스 몸체에 정의한 constructor가 단순한 메서드가 아니라는 것을 의미한다
 -   constructor는 **메서드로 해석되는 것이 아니라** 클래스가 평가되어 생성한 **함수 객체 코드의 일부**가 된다. <br/>클래스 정의가 평가되면 constructor의 기술된 동작을 하는 함수 객체가 생성된다.
 
+<br/>
+
+### 클래스와 생성자 함수에서 constructor의 차이점
+
+1. **2개 이상의 constructor를 포함하면 문법 에러가 발생한다.**
+
+```jsx
+class Person {
+		constructor() {}
+		constructor() {}
+}
+// SyntaxError: A class may only have one constructor
+```
+
+2. **constructor는 생략할 수 있다.**
+
+```jsx
+class Person {}
+```
+
+3. **constructor를 생략하면 빈 constructor가 암묵적으로 정의된다.**
+
+```jsx
+class Person {
+    constructor() {}
+}
+
+const me = new Person();
+console.log(me); // Person {}
+```
+
+4. **클래스 외부에서 인스턴스 프로퍼티의 초깃값을 전달하려면 다음과 같이 constructor에 매개변수를 선언하고 인스턴스를 생성할 때 초기값을 전달한다.**
+
+```jsx
+class Person {
+    constructor(name, address) {
+        this.name = name;
+        this.address = address;
+    }
+}
+
+const me = new Person("Roh", "Incheon");
+console.log(me); // Person {name: 'Roh', address: "Incheon"}
+```
+
+<br/>
+
+✔️ 생성자 함수의 **인스턴스 반환**과 같은 결과.
+
+📌 _명시적으로 **다른 객체**를 반환하면 this가 반환되지 못하고 **return 문에 명시한 객체가 반환**된다._
+
+```jsx
+class Person {
+    constructor(name) {
+        this.name = name;
+
+        // 명시적으로 객체를 반환하면 암묵적인 this 반환이 무시된다.
+        return {};
+    }
+}
+
+const me = new Person("Roh");
+console.log(me); // {}
+```
+
+📌 _명시적으로 **원시 값**을 반환하면 원시 값 반환은 무시되고 암묵적으로 **this가 반환**된다._
+
+```jsx
+class Person {
+    constructor(name) {
+        this.name = name;
+
+        // 명시적으로 원시 값을 반환하면 원시 값 반환은 무시되고 암묵적으로 this가 반환된다.
+        return 100;
+    }
+}
+
+const me = new Person("Roh");
+console.log(me); // Person { name: Roh }
+```
+
+## 5.2 프로토타입 메서드
+
+📌 _클래스 몸체에서 정의한 메서드는 클래스의 prototype 프로퍼티에 메서드를 추가하지 않아도 기본적으로 **프로토타입 메서드**가 된다._
+
+```jsx
+class Person {
+    constructor(name) {
+        this.name = name;
+    }
+
+    // 프로토타입 메서드
+    sayHi() {
+        console.log(`Hi! My name is ${this.name}`);
+    }
+}
+
+const me = new Person("Roh");
+me.sayHi(); // Hi! My name is Roh
+```
+
+<p align="center"><img width="60%" src="https://user-images.githubusercontent.com/54847910/134471658-c8c93015-69d6-4403-ae43-d764aae28943.png"></p>
+
+클래스틑 생성자 함수와 같이 인스턴스를 생성하는 생성자 함수라고 볼 수 있다. 클래스는 생성자 함수와 마찬가지로 프로토타입 기반의 객체 생성 메커니즘이다.
+
+## 5.3 정적 메서드
+
+생성자 함수와 다르게 클래스에서는 메서드 앞에 **static 키워드**를 붙이면 **정적 메서드(클래스 메서드)** 가 된다.
+
+```jsx
+// 생성자 함수
+function Person(name) {
+    this.name = name;
+}
+
+// 정적 메서드
+Person.sayHi = function () {
+    console.log("Hi!");
+};
+
+Person.sayHi(); // Hi!
+```
+
+```jsx
+// 클래스
+class Person {
+    constructor(name) {
+        this.name = name;
+    }
+
+    // 정적 메서드
+    static sayHi() {
+        console.log("Hi");
+    }
+}
+
+Person.sayHi(); // Hi!
+```
+
+<p align="center"><img width="60%" src="https://user-images.githubusercontent.com/54847910/134471787-554fa722-085c-41f8-a281-19c24530fd30.png"></p>
+
+정적 메서드가 바인딩된 클래스는 인스턴스의 프로토타입 체인 상에 존재하지 않기 때문에 정적 메서드는 인스턴스로 호출할 수 없다.
+
+## 5.4 정적 메서드와 프로토타입 메서드의 차이
+
+1. 정적 메서드와 프로토타입 메서드는 자신이 속해 있는 **프로토타입 체인이 다르다.**
+2. **정적 메서드**는 **클래스로 호출**하고 **프로토타입 메서드**는 **인스턴스로 호출**한다.
+3. **정적 메서드**는 **인스턴스 프로퍼티**를 참조할 수 없지만, **프로토타입 메서드**는 **인스턴스 프로퍼티**를 참조할 수 있다.
+
+📌 **_인스턴스 프로퍼티를 참조해야 한다면 정적메서드 대신 프로토타입 메서드를 사용해야 한다._**
+
+```jsx
+class Square {
+    // 정적 메서드
+    static area(width, height) {
+        return width * height;
+    }
+}
+console.log(Square.area(10, 10)); // 100
+```
+
+```jsx
+class Square {
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    // 프로토타입 메서드
+    area() {
+        return this.width * this.height;
+    }
+}
+
+const square = new Square(10, 10);
+console.log(square.area());
+```
+
+정적 메서드는 클래스로 호출해야 하므로 정적 메서드 내부의 this는 인스턴스가 아닌 클래스를 가리킨다. 즉, 프로토타입 메서드와 정적 메서드 내부의 this 바인딩이 다르다.
+
+## 5.5 클래스에서 정의한 메서드의 특징
+
+1. function 키워드를 생략한 메서드 축약 표현을 사용한다.
+2. 객체 리터럴과는 다르게 클래스에 메서드를 정의할 때는 콤마(,)가 필요없다.
+3. 암묵적으로 **strict mode**로 실행된다.
+4. for ...in 문이나 Object.keys 메서드 등으로 **열거할 수 없다.**(constructor, 프로토타입 메서드, 정적 메서드는 모두 프로퍼티 어트리뷰트 **[[Enumerable]]값**이 **false**다.)
+5. 내부 메서드 [[Constructor]]를 갖지 않는 non-constructor다. 따라서 new 연산자와 함께 호출할 수 없다.
+
+<br/><br/>
+
+# 6. 클래스의 인스턴스 생성 과정
+
+### 1. 인스턴스 생성과 this 바인딩
+
+new 연산자와 함꼐 클래스를 호출하면 constructor의 내부 코드가 실행되기에 앞서 암묵적으로 빈 객체가 생성된다.<br/> → **이 빈 객체가 바로 클래스가 생성한 인스턴스다.**
+
+constructor 내부의 this는 클래스가 생성한 인스턴스를 가리킨다.
+
+### 2. 인스턴스 초기화
+
+constructor의 내부 코드가 실행되어 this에 바인딩되어 있는 인스턴스를 초기화한다.
+
+this에 바인딩되어 있는 인스턴스에 프로퍼티를 추가하고 constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티 값을 초기화한다.
+
+constructor가 생략되었다면 이 과정도 생략된다.
+
+### 3. 인스턴스 반환
+
+클래스의 모든 처리가 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+
+```jsx
+class Person {
+    // 생성자
+    constructor(name) {
+        // 1. 암묵적으로 인스턴스가 생성되고 this에 바인딩된다.
+        console.log(this); // Person {]}
+        console.log(Object.getPrototypeOf(this) === Person.prototype); // true
+
+        // 2. this에 바인딩되어 있는 인스턴스를 초기화한다.
+        this.name = name;
+
+        // 3. 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+    }
+}
+```
+
+<br/><br/>
+
+# 7. 프로퍼티
+
+## 7.1 인스턴스 프로퍼티
+
+**인스턴스 프로퍼티**는 **constructor 내부**에서 정의해야 한다.
+
+```jsx
+class Person {
+    constructor(name) {
+        // 인스턴스 프로퍼티
+        this.name = neame;
+    }
+}
+
+const me = new Person("Roh");
+console.log(me); // Person {name: "Roh"}
+```
+
+constructor 내부에서 this에 추가한 프로퍼티는 언제나 클래스가 생성한 인스턴스의 프로퍼티가 된다.
+
+## 7.2 접근자 프로퍼티
+
+**접근자 프로퍼티**는 자체적으로 값을 갖지 않고 다른 데이터 프로퍼티의 값을 읽거나 저장할 때 사용하는 **접근자 함수(getter, setter)** 로 구성된 프로퍼티다.
+
+```jsx
+class Person {
+    constructor(firstName, lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    // getter 함수
+    get fullName() {
+        return `${this.firstName} ${this.lastName}`;
+    }
+
+    // setter 함수
+    set fullName(name) {
+        [this.firstName, this.lastName] = name.split(" ");
+    }
+}
+
+const me = new Person("Kihoon", "Roh");
+console.log(`${me.firstName} ${me.lastName}`); // Kihoon Roh
+
+// 접근자 프로퍼티를 통한 프로퍼티 값의 저장
+// setter 함수가 호출된다.
+me.fullName = "Kihoon Noh";
+console.log(me); // {firstName: "kihoon", lastName: "Noh"}
+
+// 접근자 프로퍼티를 통한 프로퍼티 값의 참조
+// 접근자 프로퍼티 fullName에 접근하면 getter 함수가 호출된다.
+console.log(me.fullName); // kihoon Noh
+```
+
+**getter**는 이름 그대로 무언가를 취득할 때 사용하므로 **반드시 무언가를 반환해야 하고**, **setter**는 무언가를 프로퍼티에 할당해야 할 때 사용하므로 **반드시 매개변수가 있어야 한다. setter는 단 하나의 매개변수만 선언할 수 있다.**
+
+**클래스의 메서드는 기본적으로 프로토타입 메서드가 된다.** 따라서 클래스의 **접근자 프로퍼티** 또한 인스턴스 프로퍼티가 아닌 **프로토타입 프로퍼티**가 된다.
+
+## 7.3 클래스 필드 정의 제안
+
+**클래스 필드(필드 또는 멤버)** 는 클래스 기반 객체지향 언어에서 클래스가 생성할 **인스턴스의 프로퍼티**를 가리키는 용어다.
+
+클래스 몸체에서 클래스 필드를 정의하는 **클래스 필드 정의(Class field difinitions)제안**은 아직 ECMAScript의 정식 표준 사양으로 승급되지 않았다.
+
+```jsx
+class Person {
+    // 클래스 필드 정의
+    name = "Roh";
+}
+
+const me = new Person();
+console.log(me); // Person {name: "Roh"}
+```
+
+📌 _**클래스 몸체에서 클래스 필드를 정의하는 경우 this에 클래스 필드를 바인딩해서는 안 된다.**_
+
+-   this는 클래스의 constructor와 메서드 내에서만 유효하다.
+
+```jsx
+class Person {
+		this.name = ''; // SyntaxError: Unexpected token '.'
+}
+```
+
+📌 _**클래스 필드를 참조하는 경우 자바스크립트에서는 this를 반드시 사용해야 한다.(자바처럼 생략할 수 없음)**_
+
+```jsx
+class Person {
+    // 클래스 필드
+    name = "Roh";
+
+    constructor() {
+        console.log(name); // ReferenceError: name in not defined
+    }
+}
+
+new Person();
+```
+
+📌 _**클래스 필드에 초기값을 할당하지 않으면 undefined를 갖는다.**_
+
+```jsx
+class Person {
+    name;
+}
+
+const me = new Person();
+console.log(me); // Person {name: undefined}
+```
+
+📌 _**클래스 필드를 통해 메서드를 정의할 수도 있다.**_
+
+-   **클래스 필드에 함수를 할당하는 경우**, 이 함수는 모든 클래스 필드는 인스턴스 프로퍼티가 되기 때문에 프로토타입 메서드가 아닌 **인스턴스 메서드**가 된다.
+-   **따라서 클래스 필드에 함수를 할당하는 것은 권장하지 않는다.**
+
 <br/><br/>
 
 ---
