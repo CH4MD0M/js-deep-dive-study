@@ -537,6 +537,236 @@ console.log(me); // Person {name: undefined}
 -   **클래스 필드에 함수를 할당하는 경우**, 이 함수는 모든 클래스 필드는 인스턴스 프로퍼티가 되기 때문에 프로토타입 메서드가 아닌 **인스턴스 메서드**가 된다.
 -   **따라서 클래스 필드에 함수를 할당하는 것은 권장하지 않는다.**
 
+<br/>
+
+## 7.4 private 필드 정의 제안
+
+자바스크립트는 접근 제한자를 지원하지 않는다. 따라서 **인스턴스 프로퍼티**는 인스턴스를 통해 클래스 외부에서 언제나 참조할 수 있다(언제나 public이다).
+
+<br/>
+
+**private 필드**를 정의하기 위해서는 선두에 **#** 을 붙여준다. **private 필드를 참조할 때**도 **#** 을 붙어주어야 한다.
+
+**public 필드**는 **어디서든 참조**할 수 있지만, **private 필드**는 **클래스 내부에서만** 참조할 수 있다.
+
+```jsx
+class Person {
+    // private 필드 정의
+    #name = "";
+
+    constructor(name) {
+        // private 필드 참조
+        this.#name = name;
+    }
+}
+
+const me = new Person("Roh");
+
+// private 필드 #name은 클래스 외부에서 참조할 수 없다.
+console.log(me.#name);
+// SyntaxError: Private field '#name' must be declared in an enclosing class
+```
+
+클래스 외부에서 private 필드에 직접 접근할 수 없지만, **접근자 프로퍼티**를 통해 간접적으로 접근하는 방법은 유효하다.
+
+```jsx
+class Person {
+    // private 필드 정의
+    #name = "";
+
+    constructor(name) {
+        this.#name = name;
+    }
+
+    // 접근자 프로퍼티 name
+    get name() {
+        return this.#name.trim();
+    }
+}
+
+const me = new Person("  Roh  ");
+console.log(me.name); // Roh
+```
+
+private 필드는 반드시 **클래스 몸체**에 정의해야 한다. constructor에 정의하면 에러가 발생한다.
+
+```jsx
+class Person {
+    constructor(name) {
+        this.#name = name;
+        // SyntaxError: Private field '#name' must be declared
+        // in an enclosing clsss
+    }
+}
+```
+
+## 7.5 static 필드 정의 제안
+
+```jsx
+class MyMath {
+    // static public 필드 정의
+    static PI = 22 / 7;
+
+    // static private 필드 정의
+    static #num = 10;
+
+    // static 메서드
+    static increment() {
+        return ++MyMath.#num;
+    }
+}
+
+console.log(MyMath.PI); // 3.142857142857143
+console.log(MyMath.increment()); // 11
+```
+
+<br/><br/>
+
+# 8. 상속에 의한 클래스 확장
+
+## 8.1. 클래스 상속과 생성자 함수 상속
+
+상속에 의한 클래스 확장은 프로토타입 기반 상속과는 다른 개념이다.
+
+📌 _**상속에 의한 클래스 확장은 기존 클래스를 상속받아 새로운 클래스를 확장(extends)하여 정의하는 것이다.**_
+
+<p align="center">
+<img width="60%" src="https://user-images.githubusercontent.com/54847910/134670632-69971eb9-9d8a-4101-ab01-a6be59361867.png">
+</p>
+
+<br/>
+
+### ✏️ 클래스 상속 예시
+
+```jsx
+class Animal {
+    constructor(age, weight) {
+        this.age = age;
+        this.weight = weight;
+    }
+
+    eat() {
+        return "eat";
+    }
+    move() {
+        return "move";
+    }
+}
+
+// 상속을 통해 Animal 클래스를 확장한 Bird 클래스
+class Bird extends Animal {
+    fly() {
+        return "fly";
+    }
+}
+
+const bird = new Bird(1, 5);
+
+console.log(bird); // Bird {age:1, weight: 5}
+console.log(bird instanceof Bird); // true
+console.log(bird instanceof Animal); // true
+
+console.log(bird.eat()); // eat
+console.log(bird.move()); // move
+console.log(bird.fly()); // fly
+```
+
+<p align="center">
+<img width="60%" src="https://user-images.githubusercontent.com/54847910/134670765-61a61b82-54ea-479d-8e18-b6832393319b.png">
+</p>
+
+자바스크립트는 클래스 기반 언어가 아니므로 생성자 함수의 의사 클래스 상속 패턴을 사용하여 상속에 의한 클래스 확장을 흉내 내기도 했다. 클래스의 등장으로 의사 클래스 상속 패턴은 더 이상 필요하지 않다.
+
+<br/>
+
+## 8.2 extends 키워드
+
+상속을 통해 클래스를 확장하려면 **extends 키워드**를 사용하여 상속받을 클래스를 정한다.
+
+```jsx
+// 슈퍼/베이스/부모 클래스
+class Base {}
+
+// 서브/파생/자식 클래스
+class Derived extends Base {}
+```
+
+수퍼클래스와 서브 클래스는 인스턴스의 프로토타입 체인뿐 아니라 **클래스 간의 프로토타입 체인**도 생성한다. 이를 통해 프로토타입 메서드, 정적 메서드 모두 상속이 가능하다.
+
+## 8.3 동적 상속
+
+**extends 키워드**는 클래스뿐만 아니라 **생성자 함수**를 상속받아 클래스를 확장할 수 있다. 단, extends 키워드 앞에는 반드시 클래스가 와야 한다.
+
+```jsx
+// 생성자 함수
+function Base(a) {
+    this.a = a;
+}
+
+// 생성자 함수를 상속받는 서브클래스
+class Derived extends Base {}
+
+const derived = new Derived(1);
+console.log(derived); // Derived {a: 1}
+```
+
+**extends 키워드** 다음에는 클래스뿐만이 아니라 [[Constructor]] 내부 메서드를 갖는 함수 객체로 평가될 수 있는 **모든 표현식**을 사용할 수 있다. 이를 통해 동적으로 상속받을 대상을 결정할 수 있다.
+
+```jsx
+function Base1() {}
+
+class Base2 {}
+
+let condition = true;
+
+// 조건에 따라 동적으로 상속 대상을 결정하는 서브클래스
+class Derived extends (condition ? Base1 : Base2) {}
+
+const derived = new Derived();
+console.log(derived); // Derived {}
+
+console.log(derived instanceof Base1); // true
+console.log(derived instanceof Base2); // false
+```
+
+## 8.4 서브클래스의 constructor
+
+**클래스에서 constructor를 생략하면** 비어 있는 constructor가 암묵적으로 정의된다.
+
+```jsx
+constructor() {}
+```
+
+**서브 클래스에서 constructor를 생략하면** 다음과 같은 constructor가 암묵적으로 정의된다.
+
+```jsx
+constructor(...args) { super(...args); }
+```
+
+-   **args**는 new 연산자와 함께 클래스를 호출할 때 전달한 **인수의 리스트**다.
+-   **super()** 는 수퍼클래스의 constructor를 호출하여 인스턴스를 생성한다.
+
+<br/>
+
+**수퍼클래스와 서브클래스 모두 constructor를 생략하면** 암묵적으로 constructor가 정의되고 **빈 객체가 생성**된다. 프로퍼티를 소유하는 인스턴스를 생성하려면 constructor 내부에 인스턴스 프로퍼티를 추가해야 한다.
+
+```jsx
+// 수퍼클래스
+class Base {
+    constructor() {}
+}
+
+// 서브클래스
+class Derived extends Base {
+    constructor(...args) {
+        super(...args);
+    }
+}
+
+const derived = new Derived();
+console.log(derived); // Derived {}
+```
+
 <br/><br/>
 
 ---
