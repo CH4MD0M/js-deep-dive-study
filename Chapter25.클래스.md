@@ -767,6 +767,118 @@ const derived = new Derived();
 console.log(derived); // Derived {}
 ```
 
+## 8.5 super 키워드
+
+super 키워드는 함수처럼 호출할 수도 있고 this와 같이 식별자처럼 참조할 수 있는 특수한 키워드다.
+
+### ✏️ super 호출
+
+**super를 호출하면 수퍼클래스의 constructor를 호출한다.**
+
+```jsx
+// 수퍼클래스
+class Base {
+    constructor(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+// 서브 클래스
+class Derived extends Base {
+    // 암묵적으로 constructor가 정의된다.
+    // constructor(...args){ super(...args); }
+}
+
+const derived = new Derived(1, 2);
+console.log(derived); // Derived {a: 1, b: 2}
+```
+
+-   new 연산자와 함께 서브클래스를 호출하면서 전달한 인수는 모두 서브클래스에 암묵적으로 정의된 constructor의 super 호출을 통해 수퍼클래스의 constructor에 전달된다.
+
+```jsx
+// 수퍼클래스
+class Base {
+    constructor(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+// 서브 클래스
+class Derived extends Base {
+    constructor(a, b, c) {
+        super(a, b);
+        this.c = c;
+    }
+}
+
+const derived = new Derived(1, 2, 3);
+console.log(derived); // Derived {a: 1, b: 2, c: 3}
+```
+
+-   수퍼클래스에서 추가한 프로퍼티와 서브클래스에서 추가한 프로퍼티를 갖는 인스턴스를 생성한다면 서브클래스의 constructor는 생략할 수 없다.
+
+### 📌 super를 호출할 때 주의사항
+
+1. 서브클래스에서 constructor를 생략하지 않는 경우 서브클래스의 constructor에서는 반드시 super를 호출해야 한다.
+2. 서브클래스의 constructor에서 super를 호출하기 전에는 this를 참조할 수 없다.
+3. super는 반드시 서브클래스의 constructor에서만 호출한다.
+
+<br/>
+
+### ✏️ super 참조
+
+**메서드 내에서 super를 참조하면 수퍼클래스의 메서드를 호출할 수 있다.**
+
+```jsx
+// 수퍼 클래스
+class Base {
+    constructor(name) {
+        this.name = name;
+    }
+    sayHi() {
+        return `Hi ${this.name}`;
+    }
+}
+
+// 서브 클래스
+class Derived extends Base {
+    sayHi() {
+        // super.sayHi는 수퍼클래스의 프로토타입 메서드를 가리킨다.
+        return `${super.sayHi()}. how are you doing?`;
+    }
+}
+
+const derived = new Derived("Roh");
+console.log(derived.sayHi()); // Hi Roh. how are you doing?
+```
+
+-   서브클래스의 프로토타입 메서드 내에서 **super.메서드명**은 **수퍼클래스의 프로토타입 메서드**를 가리킨다.
+
+super 참조를 통해 수퍼클래스의 메서드를 참조하려면 super가 **수퍼클래스의 메서드가 바인딩된 객체**(수퍼클래스의 prototype 프로퍼티에 바인딩된 프로토타입)을 참조할 수 있어야 한다.
+
+```jsx
+// 수퍼 클래스
+class Base {
+    static sayHi() {
+        return "Hi!";
+    }
+}
+
+// 서브 클래스
+class Derived extends Base {
+    static sayHi() {
+        // super.sayHi는 수퍼클래스의 정적 메서드를 가리킨다.
+        return `${super.sayHi()} how are you doing?`;
+    }
+}
+
+console.log(Derived.sayHi()); // Hi! how are you doing?
+```
+
+-   서브클래스의 정적 메서드 내에서 **super.메서드명**은 **수퍼클래스의 정적 메서드**를 가리킨다.
+
 <br/><br/>
 
 ---
