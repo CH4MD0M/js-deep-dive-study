@@ -168,6 +168,152 @@ const arrow = (a, a) => a + a;
 
 -   화살표 함수 내부에서 this, arguments, super, new.target을 참조하면 **스코프 체인을 통해 가장 가까운 상위 함수 중에서 화살표 함수가 아닌 함수**의 this, arguments, super, new.target을 참조한다.
 
+<br/>
+
+## 3.3 this
+
+화살표 함수의 this는 일반 함수의 this와 다르게 동작한다.
+
+-   콜백 함수 내부의 this가 외부 함수의 this와 다르기 때문에 발생하는 문제를 해결하기 위해 의도적으로 설계된 것이다.
+
+<br/>
+
+```jsx
+class Prefixer {
+    constructor(prefix) {
+        this.prefix = prefix;
+    }
+
+    add(arr) {
+        return arr.map((item) => this.prefix + item);
+    }
+}
+
+const prefixer = new Prefixer("-webkit-");
+console.log(prefixer.add(["transition", "user-select"]));
+// ['-webkit-transition', '-webkit-user-select']
+```
+
+화살표 함수는 함수 자체의 this 바인딩을 갖지 않는다. 따라서 화살표 함수 내부에서 this를 참조하면 **상위 스코프의 this**를 그대로 참조한다.
+
+-   이를 **lexical this**라 한다.
+-   렉시컬 스코프와 같이 화살표 함수의 this가 **함수가 정의된 위치에 의해 결정된다**는 것을 의미한다.
+
+프로퍼티에 할당한 화살표 함수도 스코프 체인 상에서 가장 가까운 상위 함수 중에서 **화살표 함수가 아닌 함수의 this**를 참조한다.
+
+화살표 함수는 함수 자체의 this 바인딩을 갖지 않기 때문에 call, apply, bind메서드를 사용해도 **화살표 함수 내부의 this를 교체할수 없다.**
+
+-   화살표 함수가 call, apply, bind메서드를 호출할 수 없는 것이 아니라 this 바인딩을 갖지 않기 때문에 this를 교체할 수 없고 항상 상위 스코프의 this를 참조한다.
+
+<br/>
+
+### ✏️ 화살표 함수 사용 시 주의사항
+
+**메서드(ES6 메서드가 아닌 일반적인 의미의 메서드)** 를 화살표 함수로 정의하는 것은 피해야 한다.
+
+```jsx
+const person = {
+    name: "Roh",
+    sayHi: () => console.log(`Hi, ${this.name}`),
+    // this는 전역객체를 가리킨다.
+};
+
+person.sayHi(); // Hi
+```
+
+**프로토타입 객체의 프로퍼티**에 화살표 함수를 할당하는 경우도 동일한 문제가 발생한다.
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+Person.prototype.sayHi = () => console.log(`Hi, ${this.name}`);
+// this는 전역객체를 가리킨다.
+
+const person = new Person("Roh");
+person.sayHi(); // Hi
+```
+
+**프로퍼티를 동적 추가할 때**는 ES6 메서드 정의를 사용할 수 없으므로 일반 함수를 할당한다.
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+Person.prototype.sayHi = function () {
+    console.log(`Hi ${this.name}`);
+};
+
+const person = new Person("Roh");
+person.sayHi(); // Hi Roh
+```
+
+**ES6 메서드**를 동적 추가하고 싶다면 **객체 리터럴**을 바인딩하고 프로토타입의 **constructor 프로퍼티**와 **생성자 함수** 간의 연결을 재설정한다.
+
+```jsx
+function Person(name) {
+    this.name = name;
+}
+
+Person.prototype = {
+    // constructor 프로퍼티와 생성자 함수 간의 연결을 재설정
+    constructor: Person,
+    sayHi() {
+        console.log(`Hi, ${this.name}`);
+    },
+};
+
+const person = new Person("Roh");
+person.sayHi(); // Hi Roh
+```
+
+## 3.4 super
+
+화살표 함수는 함수 자체의 super 바인딩을 갖지 않는다. 화살표 함수 내부에서 super를 참조하면 this와 마찬가지로 **상위 스코프의 super**를 참조한다
+
+```jsx
+class Base {
+    constructor(name) {
+        this.name = name;
+    }
+
+    sayHi() {
+        return `Hi! ${this.name}`;
+    }
+}
+
+class Derived extends Base {
+    sayHi = () => `${super.sayHi()} how are you doing?`;
+}
+
+const derived = new Derived("Roh");
+console.log(derived.sayHi());
+// Hi! Roh how are you doing?
+```
+
+## 3.5 arguments
+
+화살표 함수는 함수 자체의 arguments 바인딩을 갖지 않는다. 화살표 함수 내부에서 arguments를 참조하면 this와 마찬가지로 **상위 스코프의 arguments**를 참조한다
+
+```jsx
+(function () {
+    // 화살표 함수 foo의 arguments는 상위 스코프인 즉시 실행 함수의 arguments를 가리킨다.
+    const foo = () => console.log(arguments); // [Arguments] { '0': 1, '1': 2 }
+    foo(3, 4);
+})(1, 2);
+
+// 화살표 함수 foo의 arguments는 상위 스코프인 전역의 arguments를 가리킨다.
+// 전역에는 arguments 객체가 존재하지 않는다. arguments 객체는 함수 내부에서만 유효하다.
+const foo = () => console.log(arguments);
+foo(1, 2); // ReferenceError: arguments is not defined
+```
+
+상위 스코프의 arguments 객체를 참조할 수는 있지만 화살표 함수 자신에게 전달된 인수 목록을 확인할 수 없고 상위 함수에게 전달된 인수 목록을 참조하므로 그다지 도움이 되지 않는다.
+
+📌 _화살표 함수로 가변 인자 함수를 구현해야 할 때는 반드시 **Rest 파라미터**를 사용해야한다._
+
 <br/><br/>
 
 ---
