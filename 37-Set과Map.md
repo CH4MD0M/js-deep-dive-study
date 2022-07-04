@@ -224,3 +224,81 @@ console.log(a, rest); // 1, [2, 3]
 ```
 
 `Set` 객체는 요소의 순서에 의미를 갖지 않지만 **_Set 객체를 순회하는 순서는 요소가 추가된 순서를 따르다._** 이는 ECMAScript 시양에 규정되어 있지는 않지만 다른 이터러블의 순회와 호환성을 유지하기 위함이다.
+
+<br>
+
+### 집합 연산
+
+### ☑️ 교집합
+
+```jsx
+Set.prototype.intersection = function (set) {
+    return new Set([...this].filter((v) => set.has(v)));
+};
+
+const setA = new Set([1, 2, 3, 4]);
+const setB = new Set([2, 4]);
+
+// setA와 setB의 교집합
+console.log(setA.intersection(setB)); // Set(2) {2, 4}
+// setB와 setA의 교집합
+console.log(setB.intersection(setA)); // Set(2) {2, 4}
+```
+
+<br>
+
+### ☑️ 합집합
+
+```jsx
+Set.prototype.union = function (set) {
+    return new Set([...this, ...set]);
+};
+
+const setA = new Set([1, 2, 3, 4]);
+const setB = new Set([2, 4]);
+
+// setA와 setB의 합집합
+console.log(setA.union(setB)); // Set(4) {1, 2, 3, 4}
+// setB와 setA의 합집합
+console.log(setB.union(setA)); // Set(4) {2, 4, 1, 3}
+```
+
+<br>
+
+### ☑️ 차집합
+
+```jsx
+Set.prototype.difference = function (set) {
+    return new Set([...this].filter((v) => !set.has(v)));
+};
+
+const setA = new Set([1, 2, 3, 4]);
+const setB = new Set([2, 4]);
+
+// setA에 대한 setB의 차집합
+console.log(setA.difference(setB)); // Set(2) {1, 3}
+// setB에 대한 setA의 차집합
+console.log(setB.difference(setA)); // Set(0) {}
+```
+
+<br>
+
+### ☑️ 부분 집합과 상위 집합
+
+집합 A가 집합 B에 포함되는 경우$(A \subseteq B)$ 집합 A는 집합 B의 **부분 집합**이며, 집합 B는집합 A의 **상위 집합**이다.
+
+```jsx
+// this가 subset의 상위 집합인지 확인한다.
+Set.prototype.isSuperset = function (subset) {
+    const supersetArr = [...this];
+    return [...subset].every((v) => supersetArr.includes(v));
+};
+
+const setA = new Set([1, 2, 3, 4]);
+const setB = new Set([2, 4]);
+
+// setA가 setB의 상위 집합인지 확인한다.
+console.log(setA.isSuperset(setB)); // true
+// setB가 setA의 상위 집합인지 확인한다.
+console.log(setB.isSuperset(setA)); // false
+```
